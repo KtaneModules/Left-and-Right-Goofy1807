@@ -72,11 +72,11 @@ public class left_and_rightScript : MonoBehaviour
             sequence += Math.Pow(Bomb.GetPortCount() + Bomb.GetPortPlateCount(), 4) % 4;
         else
         {
-            sequence += Bomb.GetPortCount();
-            sequence += Bomb.GetPortPlateCount();
+            sequence += Bomb.GetBatteryCount(Battery.AA);
+            sequence += Bomb.GetSerialNumberLetters().Count();
         }
         if (Bomb.GetBatteryCount() == Bomb.GetBatteryHolderCount())
-            sequence += Math.Pow(Bomb.GetBatteryCount() + Bomb.GetBatteryHolderCount(), 2) % 6;
+            sequence += Math.Pow(Bomb.GetOnIndicators().Count() - Bomb.GetOffIndicators().Count(), 2) % 6;
         else
         {
             sequence += Bomb.GetBatteryCount();
