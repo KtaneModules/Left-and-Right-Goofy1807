@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using KModkit;
+using Random = UnityEngine.Random;
+using System.Text.RegularExpressions;
 
 public class left_and_rightScript : MonoBehaviour
 {
@@ -35,6 +38,7 @@ public class left_and_rightScript : MonoBehaviour
         public string Explanation;
         public Func<KMBombInfo, bool> Eval;
         public int Value;
+        public int FailSwitch;
     }
 
     private static readonly Condition[] switchCondition = new Condition[]
@@ -44,7 +48,7 @@ public class left_and_rightScript : MonoBehaviour
         new Condition { Explanation = "Battery holders + port plates + indicators <= 5", Eval = bomb => bomb.GetBatteryHolderCount() + bomb.GetPortPlateCount() + bomb.GetOffIndicators().Count() + bomb.GetOnIndicators().Count() <= 5, Value = 4},
         new Condition { Explanation = "At least 5 modules on the bomb", Eval = bomb => bomb.GetSolvableModuleNames().Count() >= 5, Value = 1 },
         new Condition { Explanation = "Numbers in S# equal to letters in S#", Eval = bomb => bomb.GetSerialNumberLetters().Count() == bomb.GetSerialNumberNumbers().Count(), Value = 2 },
-        new Condition { Explanation = "No condition applied", Eval = bomb => true, Value = 3 }
+        new Condition { Explanation = "No condition applied", Eval = bomb => true, Value = 3, FailSwitch = 1 }
     };
 
     void Awake()
@@ -109,6 +113,17 @@ public class left_and_rightScript : MonoBehaviour
             return;
         }
 
+        if (switchCondition.First(cond => cond.Eval(Bomb)).FailSwitch == 1)
+        {
+            var fsSwitch = switchCondition.First(cond => cond.FailSwitch == 1).Value;
+            var fsSwitchExplanation = switchCondition.First(cond => cond.FailSwitch == 1).Explanation;
+            leftSwitch = fsSwitch;
+            rightSwitch = fsSwitch;
+            Debug.LogFormat(@"[Left and Right #{0}] The green button will incur a switch after {1} presses.  Reason: {2}", moduleId, leftSwitch, fsSwitchExplanation);
+            Debug.LogFormat(@"[Left and Right #{0}] The blue button will incur a switch after {1} presses.  Reason: {2}", moduleId, rightSwitch, fsSwitchExplanation);
+            return;
+        }
+
         var allValues = switchCondition.Where(cond => cond.Eval(Bomb)).Select(cond => cond.Value).ToArray();
         var allExplanations = switchCondition.Where(cond => cond.Eval(Bomb)).Select(cond => cond.Explanation).ToArray();
         if (leftButton.GetComponent<MeshRenderer>().material.color == green)
@@ -139,7 +154,12 @@ public class left_and_rightScript : MonoBehaviour
             if (sequence[0].ToString() == "0")
             {
                 if (sequence.Length == 1)
+                {
                     GetComponent<KMBombModule>().HandlePass();
+                    moduleSolved = true;
+                    return;
+                }
+
                 sequence = sequence.Remove(0, 1);
                 leftPressed++;
                 if (leftPressed == leftSwitch)
@@ -160,7 +180,12 @@ public class left_and_rightScript : MonoBehaviour
             if (sequence[0].ToString() == "1")
             {
                 if (sequence.Length == 1)
+                {
                     GetComponent<KMBombModule>().HandlePass();
+                    moduleSolved = true;
+                    return;
+                }
+                    
                 sequence = sequence.Remove(0, 1);
                 rightPressed++;
                 if (rightPressed == rightSwitch)
@@ -191,6 +216,35 @@ public class left_and_rightScript : MonoBehaviour
             Debug.LogFormat(@"[Left and Right #{0}] The left button caused a switch after {1} presses. Remaining Sequence: {2}", moduleId, leftSwitch, lrSequence);
         else
             Debug.LogFormat(@"[Left and Right #{0}] The right button caused a switch after {1} presses. Remaining Sequence: {2}", moduleId, rightSwitch, lrSequence);
-    }   
+    }
+
+#pragma warning disable 0414
+    private readonly string TwitchHelpMessage = "!{0} left [press the left button] | !{0} right [press the right button]";
+#pragma warning restore 0414
+
+    private List<KMSelectable> ProcessTwitchCommand(string command)
+    {
+        var list = new List<KMSelectable>();
+        Match m;
+
+        if ((m = Regex.Match(command, @"^\s*(left|l)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            list.Add(leftButton);
+            Debug.LogFormat(@"[Left and Right #{0}] TwitchPlays pressed the left button", moduleId);
+
+            return list;
+        }
+
+        if ((m = Regex.Match(command, @"^\s*(right|r)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+        {
+            list.Add(rightButton);
+            Debug.LogFormat(@"[Left and Right #{0}] TwitchPlays pressed the right button", moduleId);
+
+            return list;
+        }
+
+
+        return null;
+    }
 }
 
