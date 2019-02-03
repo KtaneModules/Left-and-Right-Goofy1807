@@ -74,15 +74,14 @@ public class left_and_rightScript : MonoBehaviour
             sequence += Math.Pow(Bomb.GetPortCount() + Bomb.GetPortPlateCount(), 4) % 4;
         else
         {
-            sequence += Bomb.GetBatteryCount(Battery.AA);
+            sequence += Bomb.GetBatteryCount(Battery.D);
             sequence += Bomb.GetSerialNumberLetters().Count();
         }
         if (Bomb.GetBatteryCount() == Bomb.GetBatteryHolderCount())
             sequence += Math.Pow(Bomb.GetOnIndicators().Count() - Bomb.GetOffIndicators().Count(), 2) % 6;
         else
         {
-            sequence += Bomb.GetBatteryCount();
-            sequence += Bomb.GetBatteryHolderCount();
+            sequence += Bomb.GetBatteryCount() + Bomb.GetBatteryHolderCount();
         }
         Debug.LogFormat(@"[Left and Right #{0}] The calculated sequence from edgework is: {1}", moduleId, sequence);
         sequence = Convert.ToString(Convert.ToInt32(sequence, 10), 2);
