@@ -19,6 +19,7 @@ public class left_and_rightScript : MonoBehaviour
 
     public KMSelectable leftButton;
     public KMSelectable rightButton;
+    public GameObject sequenceText;
 
     private int leftPressed = 0;
     private int rightPressed = 0;
@@ -32,6 +33,7 @@ public class left_and_rightScript : MonoBehaviour
 
     private string sequence;
     private string lrSequence;
+    private string sequenceTxt = "";
 
     struct Condition
     {
@@ -155,6 +157,8 @@ public class left_and_rightScript : MonoBehaviour
             {
                 if (sequence.Length == 1)
                 {
+                    sequenceTxt += "L";
+                    sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                     GetComponent<KMBombModule>().HandlePass();
                     moduleSolved = true;
                     return;
@@ -162,6 +166,8 @@ public class left_and_rightScript : MonoBehaviour
 
                 sequence = sequence.Remove(0, 1);
                 leftPressed++;
+                sequenceTxt += "L";
+                sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                 if (leftPressed == leftSwitch)
                 {
                     SwitchLR(leftRight);
@@ -181,6 +187,8 @@ public class left_and_rightScript : MonoBehaviour
             {
                 if (sequence.Length == 1)
                 {
+                    sequenceTxt += "R";
+                    sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                     GetComponent<KMBombModule>().HandlePass();
                     moduleSolved = true;
                     return;
@@ -188,6 +196,8 @@ public class left_and_rightScript : MonoBehaviour
                     
                 sequence = sequence.Remove(0, 1);
                 rightPressed++;
+                sequenceTxt += "R";
+                sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                 if (rightPressed == rightSwitch)
                 {
                     SwitchLR(leftRight);

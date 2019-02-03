@@ -13,9 +13,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: leftandRight
   title: Left and Right
-  description: "You need to press the left or the right button, sound easy right?\n\nCreated
-    by Goofy\n\r\n[url=http://ktane.timwi.de/PDF/Left%20and%20Right.pdf]Manual PDF[/url]\n[url=http://ktane.timwi.de/HTML/Left%20and%20Right.html]Manual
-    HTML[/url]"
+  description: "You need to press the left or the right button, sound easy right?\n\nVersion
+    1.1\n\nCreated by Goofy\n\r\n[url=http://ktane.timwi.de/PDF/Left%20and%20Right.pdf]Manual
+    PDF[/url]\n[url=http://ktane.timwi.de/HTML/Left%20and%20Right.html]Manual HTML[/url]"
   version: 1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: eec68fe7d4654934aa88a6dc0d7a89eb, type: 3}
