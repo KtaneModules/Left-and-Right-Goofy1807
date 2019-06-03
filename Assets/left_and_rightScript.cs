@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using KModkit;
-using Random = UnityEngine.Random;
 using System.Text.RegularExpressions;
+using KModkit;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class left_and_rightScript : MonoBehaviour
 {
@@ -55,7 +54,7 @@ public class left_and_rightScript : MonoBehaviour
 
     void Awake()
     {
-        leftButton.OnInteract += delegate { Press("0");  return false; };
+        leftButton.OnInteract += delegate { Press("0"); return false; };
         rightButton.OnInteract += delegate { Press("1"); return false; };
         moduleId = moduleIdCounter++;
     }
@@ -107,7 +106,7 @@ public class left_and_rightScript : MonoBehaviour
 
     void SetSwitch()
     {
-        if( Bomb.IsIndicatorOn(Indicator.FRK) && Bomb.IsIndicatorOff(Indicator.NSA) && Bomb.IsPortPresent(Port.PS2) && Bomb.IsPortPresent(Port.Parallel) && Bomb.IsPortPresent(Port.Serial) && Bomb.IsPortPresent(Port.RJ45) && Bomb.IsPortPresent(Port.DVI) && !Bomb.IsPortPresent(Port.StereoRCA))
+        if (Bomb.IsIndicatorOn(Indicator.FRK) && Bomb.IsIndicatorOff(Indicator.NSA) && Bomb.IsPortPresent(Port.PS2) && Bomb.IsPortPresent(Port.Parallel) && Bomb.IsPortPresent(Port.Serial) && Bomb.IsPortPresent(Port.RJ45) && Bomb.IsPortPresent(Port.DVI) && !Bomb.IsPortPresent(Port.StereoRCA))
         {
             leftSwitch = rightSwitch = -1;
             Debug.LogFormat(@"[Left and Right #{0}] The Special rule applied, lucker. No switches will occur", moduleId);
@@ -146,7 +145,7 @@ public class left_and_rightScript : MonoBehaviour
             Debug.LogFormat(@"[Left and Right #{0}] The blue button will incur a switch after {1} presses.  Reason: {2}", moduleId, leftSwitch, leftExplanation);
         }
     }
-    
+
     void Press(string leftRight)
     {
         if (leftRight == "0")
@@ -192,7 +191,7 @@ public class left_and_rightScript : MonoBehaviour
                     moduleSolved = true;
                     return;
                 }
-                    
+
                 sequence = sequence.Remove(0, 1);
                 rightPressed++;
                 sequenceTxt += "R";
@@ -210,7 +209,7 @@ public class left_and_rightScript : MonoBehaviour
         }
     }
 
-   void SwitchLR(string LR)
+    void SwitchLR(string LR)
     {
         sequence = sequence.Replace("0", "2");
         sequence = sequence.Replace("1", "0");
@@ -228,32 +227,20 @@ public class left_and_rightScript : MonoBehaviour
     }
 
 #pragma warning disable 0414
-    private readonly string TwitchHelpMessage = "!{0} left [press the left button] | !{0} right [press the right button]";
+    private readonly string TwitchHelpMessage = "!{0} left, left, right | !{0} LLR";
 #pragma warning restore 0414
 
-    private List<KMSelectable> ProcessTwitchCommand(string command)
+    private IEnumerable<KMSelectable> ProcessTwitchCommand(string command)
     {
-        var list = new List<KMSelectable>();
         Match m;
+        if ((m = Regex.Match(command, @"^\s*(((left|right)[, ]*)+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+            return m.Groups[1].Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.EqualsIgnoreCase("left") ? leftButton : rightButton).ToArray();
 
-        if ((m = Regex.Match(command, @"^\s*(left|l)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
-        {
-            list.Add(leftButton);
-            Debug.LogFormat(@"[Left and Right #{0}] TwitchPlays pressed the left button", moduleId);
+        else if ((m = Regex.Match(command, @"^\s*([LR, ]+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
+            return m.Groups[1].Value.Where(ch => "LlRr".Contains(ch)).Select(ch => ch == 'l' || ch == 'L' ? leftButton : rightButton).ToArray();
 
-            return list;
-        }
-
-        if ((m = Regex.Match(command, @"^\s*(right|r)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success)
-        {
-            list.Add(rightButton);
-            Debug.LogFormat(@"[Left and Right #{0}] TwitchPlays pressed the right button", moduleId);
-
-            return list;
-        }
-
-
-        return null;
+        else
+            return null;
     }
 }
 
