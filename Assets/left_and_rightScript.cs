@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -54,8 +55,8 @@ public class left_and_rightScript : MonoBehaviour
 
     void Awake()
     {
-        leftButton.OnInteract += delegate { Press("0"); return false; };
-        rightButton.OnInteract += delegate { Press("1"); return false; };
+        leftButton.OnInteract += delegate { Press(left: true); return false; };
+        rightButton.OnInteract += delegate { Press(left: false); return false; };
         moduleId = moduleIdCounter++;
     }
 
@@ -146,9 +147,9 @@ public class left_and_rightScript : MonoBehaviour
         }
     }
 
-    void Press(string leftRight)
+    void Press(bool left)
     {
-        if (leftRight == "0")
+        if (left)
         {
             leftButton.AddInteractionPunch();
             if (sequence[0].ToString() == "0")
@@ -168,7 +169,7 @@ public class left_and_rightScript : MonoBehaviour
                 sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                 if (leftPressed == leftSwitch)
                 {
-                    SwitchLR(leftRight);
+                    SwitchLR(left);
                     leftPressed = 0;
                 }
             }
@@ -198,7 +199,7 @@ public class left_and_rightScript : MonoBehaviour
                 sequenceText.GetComponent<TextMesh>().text = sequenceTxt;
                 if (rightPressed == rightSwitch)
                 {
-                    SwitchLR(leftRight);
+                    SwitchLR(left);
                     rightPressed = 0;
                 }
             }
@@ -209,7 +210,7 @@ public class left_and_rightScript : MonoBehaviour
         }
     }
 
-    void SwitchLR(string LR)
+    void SwitchLR(bool left)
     {
         sequence = sequence.Replace("0", "2");
         sequence = sequence.Replace("1", "0");
@@ -220,7 +221,7 @@ public class left_and_rightScript : MonoBehaviour
         lrSequence = lrSequence.Replace("0", "L,");
         lrSequence = lrSequence.Replace("1", "R,");
 
-        if (LR == "0")
+        if (left)
             Debug.LogFormat(@"[Left and Right #{0}] The left button caused a switch after {1} presses. Remaining Sequence: {2}", moduleId, leftSwitch, lrSequence);
         else
             Debug.LogFormat(@"[Left and Right #{0}] The right button caused a switch after {1} presses. Remaining Sequence: {2}", moduleId, rightSwitch, lrSequence);
@@ -241,6 +242,15 @@ public class left_and_rightScript : MonoBehaviour
 
         else
             return null;
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        while (!moduleSolved)
+        {
+            (sequence[0] == '0' ? leftButton : rightButton).OnInteract();
+            yield return new WaitForSeconds(.1f);
+        }
     }
 }
 

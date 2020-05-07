@@ -772,7 +772,7 @@ MonoBehaviour:
   Bomb: {fileID: 114931664327480378}
   leftButton: {fileID: 114492179918736498}
   rightButton: {fileID: 114773944048361442}
-  sequenceText: {fileID: 0}
+  sequenceText: {fileID: 1712796181507428}
 --- !u!114 &114077340770722748
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   id: leftandRight
   title: Left and Right
   description: "You need to press the left or the right button, sound easy right?\n\nVersion
-    1.1\n\nCreated by Goofy\n\r\n[url=http://ktane.timwi.de/PDF/Left%20and%20Right.pdf]Manual
+    1.2\n\nCreated by Goofy\n\r\n[url=http://ktane.timwi.de/PDF/Left%20and%20Right.pdf]Manual
     PDF[/url]\n[url=http://ktane.timwi.de/HTML/Left%20and%20Right.html]Manual HTML[/url]"
   version: 1
   outputFolder: build
